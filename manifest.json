@@ -1,11 +1,11 @@
 {
 "package_id"      : "com.modouwifi.kms",
 "os_version"      : "0.7.01",
-"name"            : "KMS-server",
+"name"            : "app-KMS",
 "author"          : "fortheking",
 "author_mail"     : "fortheking@gmail.com",
 "homepage"        : "http://bbs.modouwifi.cn/",
-"version"         : "0.0.1",
+"version"         : "2.0",
 "release_date"    : "2014.11.18",
 "icon"            : "./res/icon.png",
 "location"        : "internal",
