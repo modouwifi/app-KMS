@@ -27,7 +27,7 @@ usage() {
 start() {
     $CURWDIR/bin/vlmcsd &
     #/system/sbin/appInfo.sh set_status $PACKAGEID ISRUNNING
-    messagebox KMS激活服务器 愉快的在windows上激活吧!!! 2 后台运行服务 no_cmd 退出服务关闭 $CURWDIR/bin/kill
+    messagebox KMS激活服务器 愉快的在windows上激活吧!!! 2 后台运行 no_cmd 彻底退出 $CURWDIR/bin/kill
 
 
 #    progress -t KMS激活服务器 -m 愉快的在windows上激活吧 -p $CURWDIR/bin/kill &
