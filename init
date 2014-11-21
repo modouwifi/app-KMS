@@ -1,122 +1,84 @@
 #!/bin/sh
 
-CURDIR=$(cd $(dirname $0) && pwd)
-CONFIDR="$CURDIR/conf"
-PACKAGEID="com.modouwifi.kms"
-MTHLOG="/data/log/kms.log"
-# to tp
-TO_TP_TITLE="kms"
-TO_TP_CONF_DIR="/data/conf/launcher/conf.d"
-TO_TP_ICON="$CURDIR/res/kms.png"
-TO_TP_PRESSED_ICON="$CURDIR/res/kms.png"
+CURWDIR="$(cd $(dirname $0) && pwd)"
+TITLE="KMS"
+PROGRAM_NAME="app-kms"
+CUSTOM_BIN="/system/apps/tp/bin/custom"
+CUSTOM_CONFIG_FILE="$CURWDIR/custom.conf"
 
-usage()
-{
-	return 0;
+APPS_CONFIG_DIR="/data/conf"
+LAUNCHER_CONFIG_DIR="$APPS_CONFIG_DIR/launcher/conf.d"
+LAUNCHER_CONFIG_FILE="$LAUNCHER_CONFIG_DIR/$PROGRAM_NAME.conf"
+
+ICON="./res/kms.png"
+PRESSED_ICON="./res/kms.png"
+
+PID_FILE="$CURWDIR/$PROGRAM_NAME.pid"
+PKILL_BIN="/usr/bin/pkill"
+INSTALL_BIN="/usr/bin/install"
+REMOVE="/bin/rm -f"
+
+usage() {
+    echo "ERROR: action missing"
+    echo "syntax: $0 <start|stop|restart|status|config|install|uninstall>"
+    echo "example: $0 start"
 }
 
-install()
-{
-    # to tp
-    if [ ! -d $TO_TP_CONF_DIR ]; then
-        mkdir -p $TO_TP_CONF_DIR
-    fi
-    echo "{" > "$TO_TP_CONF_FILE"
-    echo "\"name\" : \"$TO_TP_TITLE\"," >> "$TO_TP_CONF_FILE"
-    echo "\"icon\" : \"$TO_TP_ICON\"," >> "$TO_TP_CONF_FILE"
-    echo "\"iconPressed\" : \"$TO_TP_PRESSED_ICON\"," >> "$TO_TP_CONF_FILE"
-    echo "\"exec\" : \"$CURDIR/bin/vlmcsd && messagebox KMS激活服务器 ServerIs:modouwifi.net 1 关闭程序 killallvlmcsd\"," >> "$TO_TP_CONF_FILE"
-    echo "\"msgNum\" : 4" >> "$TO_TP_CONF_FILE"
-    echo "}" >> "$TO_TP_CONF_FILE"
-    /system/sbin/appInfo.sh set_status $PACKAGEID NOTRUNNING
-    return 0;
+start() {
+    $CURWDIR/bin/vlmcsd &
+    #/system/sbin/appInfo.sh set_status $PACKAGEID ISRUNNING
+    messagebox KMS激活服务器 愉快的在windows上激活吧!!! 2 后台运行服务 no_cmd 退出服务关闭 $CURWDIR/bin/kill
+
+
+#    progress -t KMS激活服务器 -m 愉快的在windows上激活吧 -p $CURWDIR/bin/kill &
 }
 
-uninstall()
-{
-    rm  $MTHLOG
-    echo "uninstall";
-    return 0;
-}
-
-stop()
-{
+stop() {
     killall vlmcsd
     /system/sbin/appInfo.sh set_status $PACKAGEID NOTRUNNING
     return 0;
 }
 
-start()
-{
-    chmod +x $CURDIR/bin/vlmcsd
-    $CURDIR/bin/vlmcsd &
-    /system/sbin/appInfo.sh set_status $PACKAGEID ISRUNNING
-    return 0;
-}
 
-status()
-{
-    return 0;
-}
 
-set_config()
-{
-    /system/sbin/appInfo.sh set_status $PACKAGEID ISRUNNING
-    return 0;
+config() {
+    echo "{" > "$PROGRAM_NAME.conf"
+    echo "\"name\" :  \"$TITLE\"," >> "$PROGRAM_NAME.conf"
+    echo "\"icon\" : \"$CURWDIR/$ICON\"," >> "$PROGRAM_NAME.conf"
+    echo "\"iconPressed\" : \"$CURWDIR/$PRESSED_ICON\"," >> "$PROGRAM_NAME.conf"
+    echo "\"exec\" : \"$CURWDIR/init start\"," >> "$PROGRAM_NAME.conf"
+    echo "\"msgNum\" : 4" >> "$PROGRAM_NAME.conf"
+    echo "}" >> "$PROGRAM_NAME.conf"
+
+    $INSTALL_BIN -d $LAUNCHER_CONFIG_DIR
+    $INSTALL_BIN "$PROGRAM_NAME.conf" "$LAUNCHER_CONFIG_FILE"
+    }
+
+uninstall() {
+    $REMOVE "$LAUNCHER_CONFIG_FILE"
 }
 
 # main
 if [ $# -lt 1 ]; then
-    usage init
-    exit 1
+    usage
+    exit 255
 fi
 
-
 case "$1" in
-    "stop")
-        stop;
-        if [ "0" != "$?" ]; then
-            exit 1;
-        fi
-        exit 0;
-        ;;
-    "start")
-        start;
-        if [ "0" != "$?" ]; then
-            exit 1;
-        fi
-        exit 0;
-        ;;
-    "status")
-        status;
-        if [ "0" != "$?" ]; then
-            exit 1;
-        fi
-        exit 0;
-        ;;
-    "set_config")
-        set_config;
-        if [ "0" != "$?" ]; then
-            exit 1;
-        fi
-        exit 0;
-        ;;
-    "install")
-        install;
-        if [ "0" != "$?" ]; then
-            exit 1;
-        fi
-        exit 0;
-        ;;
-    "uninstall")
-        uninstall;
-        if [ "0" != "$?" ]; then
-            exit 1;
-        fi
-        exit 0;
-        ;;
-    *)
-        usage init;
-        exit 1;
-        ;;
+    "start" )
+        start;;
+    "stop" )
+        stop;;
+    "run" )
+        run;;
+    "restart" )
+        start
+        stop;;
+    "install" )
+        config;;
+    "uninstall" )
+        uninstall;;
+    * )
+        usage ;;
 esac
+
